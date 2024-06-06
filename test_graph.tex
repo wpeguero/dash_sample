@@ -1,0 +1,57 @@
+\documentclass{report}
+
+\usepackage{pgfplots}
+\usepackage{siunitx}
+
+\begin{document}
+
+% http://tex.stackexchange.com/a/15002/100384
+\newcommand*{\getlength}[2]{%
+   % Convert to `cm` and round to two fractional digits:
+   \pgfmathsetmacro#1{round(0.0351459804*#2)}%
+}
+
+\rotatebox{90}{
+    \begin{tikzpicture}
+        % a factor for measures, since pfplots produces slightly bigger images than defined
+        %   in width/height. This can be used to adjust that problem manually
+        \pgfmathsetmacro{\factor}{0.9}
+
+        % we will need some length in `cm`, without units, and rounded
+        \getlength{\yMax}{\factor*\textwidth}
+        \getlength{\xMax}{\factor*\textheight}
+
+        \begin{axis}[
+            set layers,
+            width=\factor\textheight, height=\factor\textwidth,
+            x=1cm, y=1cm,
+            axis lines = middle,
+            xlabel = {t\lbrack\si{\second}\rbrack}, 
+            ylabel = {x\lbrack\si{\metre}\rbrack}, 
+            x label style = {anchor = north west, font = \scriptsize},
+            y label style = {anchor = north east, font = \scriptsize, shift={(0,0.5cm)}},
+            xtick={0,1,...,\xMax},
+            ytick={0,1,...,\yMax},
+            minor xtick={0,0.1,0.2,...,\xMax},
+            minor ytick={0,0.1,0.2,...,\yMax},
+            tick style = {line width = 0.6pt, black!40!white},
+            minor tick style = {line width = 0.3pt, black!40!white},
+            ticklabel style = {font=\tiny, fill=white},
+            axis line style = {-latex},
+            grid = both,
+            minor grid style={line width=0.3pt, black!40!white},
+            grid style={line width=0.6pt, black!40!white},
+            ymin=0, ymax=\yMax,
+            xmin=0, xmax=\xMax,
+            ]
+            \addplot[only marks] coordinates {(6.4,7.2) +-(1,0.5)};
+
+            % now manually draw the 0.5cm grid on the grid layer
+            \begin{pgfonlayer}{axis grid}
+                \draw[line width=0.45pt, step=0.5cm, black!40!white] (axis cs: 0, 0) grid (axis cs: \xMax, \yMax);
+            \end{pgfonlayer}
+        \end{axis}
+    \end{tikzpicture}
+}
+
+\end{document}
